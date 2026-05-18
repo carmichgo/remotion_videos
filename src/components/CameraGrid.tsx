@@ -109,10 +109,10 @@ const CameraTile: React.FC<{
 };
 
 export const CameraGrid: React.FC<Props> = ({
-  cols = 4,
-  rows = 4,
+  cols = 6,
+  rows = 3,
   focusAtFrame = null,
-  focusIndex = 6,
+  focusIndex = 8,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();

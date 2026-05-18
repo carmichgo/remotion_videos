@@ -23,11 +23,11 @@ export const ClosingLogo: React.FC = () => {
         opacity: fade,
       }}
     >
-      <OmnisightLogo size={120} withWordmark />
+      <OmnisightLogo size={150} withWordmark />
       <div
         style={{
           fontFamily: fonts.body,
-          fontSize: 30,
+          fontSize: 34,
           fontWeight: 400,
           color: colors.textMuted,
         }}

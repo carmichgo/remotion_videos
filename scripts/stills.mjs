@@ -37,7 +37,10 @@ const composition = await selectComposition({
   chromiumOptions,
 });
 
-const frames = [995, 1045];
+// Frames representativos (uno por beat) para verificación visual rápida.
+const frames = [
+  30, 300, 520, 690, 870, 1000, 1045, 1160, 1245, 1540, 1680, 1790,
+];
 const dir = path.join(root, 'out', 'stills');
 fs.mkdirSync(dir, { recursive: true });
 

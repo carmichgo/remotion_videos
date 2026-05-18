@@ -3,9 +3,10 @@ import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
 import { colors } from '../theme/colors';
 import { fonts } from '../theme/fonts';
 import { CapabilityBlock } from '../components/CapabilityBlock';
+import { SystemMedia } from '../components/SystemMedia';
 
 const MotionIcon: React.FC = () => (
-  <svg width="46" height="46" viewBox="0 0 24 24" fill="none">
+  <svg width="52" height="52" viewBox="0 0 24 24" fill="none">
     <circle cx="13" cy="5" r="2" fill={colors.accent} />
     <path
       d="M13 8l-3 5 3 2 1 5M10 13l-4 1M13 8l4 2"
@@ -23,7 +24,6 @@ const MotionIcon: React.FC = () => (
   </svg>
 );
 
-// Silueta simple (rectángulo + círculo cabeza), nunca rostro real.
 const Figure: React.FC<{ size?: number }> = ({ size = 1 }) => (
   <svg width={70 * size} height={140 * size} viewBox="0 0 70 140">
     <circle cx="35" cy="22" r="18" fill="#cfe4ee" />
@@ -41,10 +41,10 @@ const Detection: React.FC<{ label: string; cam: string }> = ({
     <div
       style={{
         position: 'absolute',
-        top: 76,
-        left: 60,
-        right: 60,
-        bottom: 60,
+        top: 90,
+        left: 70,
+        right: 70,
+        bottom: 70,
         border: `4px solid ${colors.alert}`,
         borderRadius: 10,
         boxShadow: `0 0 ${20 * pulse}px ${colors.alert}`,
@@ -53,14 +53,14 @@ const Detection: React.FC<{ label: string; cam: string }> = ({
       <div
         style={{
           position: 'absolute',
-          top: -52,
+          top: -56,
           left: -4,
           fontFamily: fonts.mono,
-          fontSize: 26,
+          fontSize: 28,
           fontWeight: 700,
           color: colors.text,
           background: colors.alert,
-          padding: '8px 16px',
+          padding: '8px 18px',
           borderRadius: 6,
         }}
       >
@@ -70,75 +70,80 @@ const Detection: React.FC<{ label: string; cam: string }> = ({
   );
 };
 
-// Beat 4c — Detección de acciones (0:31–0:36, 150 frames).
-export const Beat4c_ActionDetection: React.FC = () => {
+const ActionMock: React.FC = () => {
   const frame = useCurrentFrame();
   const phase2 = frame >= 78;
-
-  const runX = interpolate(frame, [10, 70], [10, 70], {
+  const runX = interpolate(frame, [10, 70], [12, 72], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
   const bob = Math.sin(frame / 4) * 10;
 
   return (
+    <div style={{ position: 'absolute', inset: 0 }}>
+      {!phase2 ? (
+        <>
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 110,
+              left: `${runX}%`,
+              transform: `translateY(${bob}px)`,
+            }}
+          >
+            <Figure size={2.4} />
+          </div>
+          {frame > 36 ? (
+            <Detection label="Carrera detectada" cam="Cámara 23" />
+          ) : null}
+        </>
+      ) : (
+        <>
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 110,
+              left: 0,
+              right: 0,
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
+            {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+              <div
+                key={i}
+                style={{
+                  marginLeft: i === 0 ? 0 : -34,
+                  transform: `translateY(${
+                    Math.sin((frame + i * 6) / 6) * 6
+                  }px)`,
+                }}
+              >
+                <Figure size={1.9} />
+              </div>
+            ))}
+          </div>
+          <Detection label="Aglomeración inusual" cam="Cámara 41" />
+        </>
+      )}
+    </div>
+  );
+};
+
+// Beat 4c — Detección de acciones (0:31–0:36, 150 frames).
+export const Beat4c_ActionDetection: React.FC = () => {
+  return (
     <AbsoluteFill style={{ background: colors.bg }}>
-      <CapabilityBlock icon={<MotionIcon />} title="Detección de acciones">
-        <div
-          style={{
-            width: '100%',
-            height: 660,
-            borderRadius: 22,
-            overflow: 'hidden',
-            border: `2px solid ${colors.border}`,
-            background: colors.bgDark,
-            position: 'relative',
-          }}
-        >
-          {!phase2 ? (
-            <>
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: 90,
-                  left: `${runX}%`,
-                  transform: `translateY(${bob}px)`,
-                }}
-              >
-                <Figure size={2} />
-              </div>
-              {frame > 36 ? (
-                <Detection label="Carrera detectada" cam="Cámara 23" />
-              ) : null}
-            </>
-          ) : (
-            <>
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: 90,
-                  left: 0,
-                  right: 0,
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}
-              >
-                {[0, 1, 2, 3, 4, 5].map((i) => (
-                  <div
-                    key={i}
-                    style={{
-                      marginLeft: i === 0 ? 0 : -28,
-                      transform: `translateY(${Math.sin((frame + i * 6) / 6) * 6}px)`,
-                    }}
-                  >
-                    <Figure size={1.5} />
-                  </div>
-                ))}
-              </div>
-              <Detection label="Aglomeración inusual" cam="Cámara 41" />
-            </>
-          )}
-        </div>
+      <CapabilityBlock
+        icon={<MotionIcon />}
+        title="Detección de acciones"
+        subtitle="Peleas, aglomeraciones, carreras, intrusiones — en automático."
+      >
+        <SystemMedia
+          slot="beat4c_acciones"
+          style={{ width: '100%', height: '100%' }}
+          fallback={<ActionMock />}
+        />
       </CapabilityBlock>
     </AbsoluteFill>
   );

@@ -11,8 +11,8 @@ import secretariosData from './data/secretarios.json';
 const secretarios = secretariosData as SecretarioRecord[];
 
 const FPS = 30;
-const WIDTH = 1080;
-const HEIGHT = 1920;
+const WIDTH = 1920;
+const HEIGHT = 1080;
 const TOTAL_FRAMES = 1800; // 60s @ 30fps
 
 // Destinatario de ejemplo para Remotion Studio (Tamaulipas).

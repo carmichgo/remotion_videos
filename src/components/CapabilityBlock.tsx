@@ -6,12 +6,16 @@ import { fonts } from '../theme/fonts';
 type Props = {
   icon: React.ReactNode;
   title: string;
-  children: React.ReactNode; // área de demo
+  subtitle?: string;
+  children: React.ReactNode; // área de demo (derecha)
 };
 
+// Layout horizontal 16:9: columna izquierda (ícono + título), columna
+// derecha (demo grande).
 export const CapabilityBlock: React.FC<Props> = ({
   icon,
   title,
+  subtitle,
   children,
 }) => {
   const frame = useCurrentFrame();
@@ -30,27 +34,27 @@ export const CapabilityBlock: React.FC<Props> = ({
         width: '100%',
         height: '100%',
         display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
         alignItems: 'center',
-        gap: 56,
-        padding: '0 64px',
+        gap: 80,
+        padding: '0 110px',
       }}
     >
       <div
         style={{
+          width: 560,
+          flexShrink: 0,
           display: 'flex',
-          alignItems: 'center',
-          gap: 26,
+          flexDirection: 'column',
+          gap: 30,
           opacity: enter,
-          transform: `translateY(${(1 - enter) * 26}px)`,
+          transform: `translateX(${(1 - enter) * -28}px)`,
         }}
       >
         <div
           style={{
-            width: 88,
-            height: 88,
-            borderRadius: 20,
+            width: 104,
+            height: 104,
+            borderRadius: 24,
             background: 'rgba(0,212,255,0.12)',
             border: `2px solid ${colors.accent}`,
             display: 'flex',
@@ -64,19 +68,32 @@ export const CapabilityBlock: React.FC<Props> = ({
           style={{
             fontFamily: fonts.display,
             fontWeight: 900,
-            fontSize: 56,
+            fontSize: 76,
             color: colors.text,
-            maxWidth: 680,
-            lineHeight: 1.05,
+            lineHeight: 1.04,
           }}
         >
           {title}
         </div>
+        {subtitle ? (
+          <div
+            style={{
+              fontFamily: fonts.body,
+              fontWeight: 500,
+              fontSize: 30,
+              color: colors.textMuted,
+              lineHeight: 1.35,
+            }}
+          >
+            {subtitle}
+          </div>
+        ) : null}
       </div>
 
       <div
         style={{
-          width: '100%',
+          flex: 1,
+          height: 760,
           opacity: enter,
           transform: `scale(${0.97 + enter * 0.03})`,
         }}

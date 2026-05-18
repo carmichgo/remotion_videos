@@ -4,9 +4,9 @@ import { colors } from '../theme/colors';
 import { fonts } from '../theme/fonts';
 import { SearchBar } from '../components/SearchBar';
 import { ResultsGrid, ResultItem } from '../components/ResultsGrid';
+import { SystemMedia } from '../components/SystemMedia';
 
-const QUERY =
-  'hombre con chamarra roja y mochila negra, últimas 4 horas';
+const QUERY = 'hombre con chamarra roja y mochila negra, últimas 4 horas';
 
 const RESULTS: ResultItem[] = [
   { label: 'Cámara 47 — 14:32' },
@@ -17,28 +17,28 @@ const RESULTS: ResultItem[] = [
   { label: 'Cámara 88 — 15:04' },
 ];
 
-// Beat 3 — Promesa (0:12–0:20, 240 frames).
-// Typewriter de la búsqueda; a los ~5s (frame 150) click y aparecen 6 resultados.
+// A los ~5s (frame 150) click y aparecen 6 resultados.
 const CLICK_FRAME = 150;
 
-export const Beat3_Promise: React.FC = () => {
+const PromiseMock: React.FC = () => {
   const frame = useCurrentFrame();
   const showResults = frame >= CLICK_FRAME;
-
   return (
-    <AbsoluteFill
+    <div
       style={{
-        background: colors.bg,
-        padding: '90px 70px',
+        position: 'absolute',
+        inset: 0,
         display: 'flex',
         flexDirection: 'column',
-        gap: 50,
+        justifyContent: 'center',
+        gap: 56,
+        padding: '0 130px',
       }}
     >
       <div
         style={{
           fontFamily: fonts.mono,
-          fontSize: 22,
+          fontSize: 26,
           color: colors.textMuted,
           letterSpacing: 1,
         }}
@@ -55,8 +55,22 @@ export const Beat3_Promise: React.FC = () => {
       />
 
       {showResults ? (
-        <ResultsGrid items={RESULTS} startFrame={CLICK_FRAME + 6} cols={3} />
+        <ResultsGrid items={RESULTS} startFrame={CLICK_FRAME + 6} cols={6} />
       ) : null}
+    </div>
+  );
+};
+
+// Beat 3 — Promesa (0:12–0:20, 240 frames).
+export const Beat3_Promise: React.FC = () => {
+  return (
+    <AbsoluteFill style={{ background: colors.bg }}>
+      <SystemMedia
+        slot="beat3_busqueda"
+        framed={false}
+        style={{ width: '100%', height: '100%' }}
+        fallback={<PromiseMock />}
+      />
     </AbsoluteFill>
   );
 };

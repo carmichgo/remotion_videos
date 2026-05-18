@@ -1,8 +1,8 @@
 # Omnisight — Videos personalizados para Secretarios de Seguridad
 
-Proyecto [Remotion](https://www.remotion.dev/) que genera videos verticales
-**1080×1920, 60 s, 30 fps** personalizados para los Secretarios de Seguridad de
-los 32 estados de México.
+Proyecto [Remotion](https://www.remotion.dev/) que genera videos horizontales
+**1920×1080 (16:9), 60 s, 30 fps** personalizados para los Secretarios de
+Seguridad de los 32 estados de México.
 
 La personalización ocurre solo en los **primeros 5 s** (intro) y los
 **últimos 7 s** (cierre). El cuerpo (~48 s) es compartido entre todos los
@@ -118,9 +118,10 @@ ElevenLabs con los guiones de arriba y escribir los MP3 en las mismas rutas.
 src/
   Root.tsx                 # registro de composiciones
   index.ts                 # registerRoot
+  assets.ts                # slots de medios reales (drop-in)
   compositions/            # FinalVideo + Intro/MasterBody/Outro/Logo
   scenes/                  # Beats 2–5 (Beat4a–4d)
-  components/              # piezas reutilizables (logo, search, grid, …)
+  components/              # piezas reutilizables (SystemMedia, logo, search, …)
   theme/                   # colores, tipografía, fuentes
   data/secretarios.json    # destinatarios
 public/audio/              # voiceovers (placeholders .wav)
@@ -143,12 +144,39 @@ out/                       # MP4 renderizados
 | 6    | 1590–1770 | 0:53–0:59 | Cierre personalizado                   |
 | 7    | 1770–1800 | 0:59–1:00 | Logo Omnisight                         |
 
+## Imagen real del sistema (drop-in)
+
+Cada área de demo tiene un **slot** de medios. Por defecto se muestra el
+mockup procedural; al aportar footage/captura real del sistema Omnisight se
+sustituye sin tocar las escenas.
+
+Pasos:
+
+1. Suelta el archivo en `public/` — por ejemplo:
+   - `public/video/beat3_busqueda.mp4` (grabación de pantalla), o
+   - `public/screens/beat4d_reglas.png` (captura).
+2. Abre `src/assets.ts` y pon la ruta (relativa a `public/`) en el slot:
+
+   ```ts
+   beat3_busqueda: 'video/beat3_busqueda.mp4',
+   beat4d_reglas:  'screens/beat4d_reglas.png',
+   ```
+
+3. Re-renderiza. `<SystemMedia>` detecta video vs imagen por la extensión
+   (`.mp4/.webm/.mov` = video; resto = imagen) y lo encaja con `objectFit: cover`.
+
+Slots disponibles: `beat2_camaras`, `beat3_busqueda`, `beat4a_facial`,
+`beat4b_placas`, `beat4c_acciones`, `beat4d_reglas`, `beat4d_busqueda`,
+`beat5_infra`. Recomendación: para video usa clips 16:9; el área de demo de los
+Beats 4 es ~1170×760 px, las de Beats 2/3 son a sangre completa (1920×1080).
+
 ## Notas de diseño
 
-- **Sin rostros reales**: todas las personas son siluetas/avatares genéricos.
-- **Visuales procedurales**: el mosaico de cámaras y las demos de capacidades
-  se generan con React/SVG (no requieren archivos MP4). *TODO: si se quieren
-  screen recordings reales, sustituir las escenas por `<OffthreadVideo>`.*
+- **Formato**: 1920×1080 (16:9). Beats de capacidad con layout a dos columnas
+  (texto a la izquierda, demo a la derecha).
+- **Sin rostros reales**: en los mockups, las personas son siluetas genéricas.
+- **Visuales procedurales como fallback**: si un slot no tiene asset real, se
+  usa el mockup React/SVG (el proyecto siempre renderiza de extremo a extremo).
 - **Sin música**: solo voiceover.
 - Tipografía **Inter** + **JetBrains Mono** vía `@remotion/google-fonts`.
 - Tailwind está habilitado (`@remotion/tailwind`); las animaciones usan

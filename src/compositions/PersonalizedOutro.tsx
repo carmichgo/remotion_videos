@@ -55,15 +55,15 @@ export const PersonalizedOutro: React.FC<SecretarioProps> = ({
         padding: 90,
       }}
     >
-      <AnimatedText delay={6} fontSize={96} fontWeight={900}>
+      <AnimatedText delay={6} fontSize={128} fontWeight={900}>
         Quince minutos.
       </AnimatedText>
       <AnimatedText
         delay={26}
-        fontSize={48}
+        fontSize={54}
         fontWeight={500}
         color={colors.textMuted}
-        style={{ marginTop: 22, maxWidth: 820 }}
+        style={{ marginTop: 24, maxWidth: 1100 }}
       >
         Le muestro cómo se vería en {estado}.
       </AnimatedText>
