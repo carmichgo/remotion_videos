@@ -1,0 +1,32 @@
+{
+  "name": "omnisight-secretarios",
+  "version": "1.0.0",
+  "description": "Videos verticales personalizados de Omnisight para Secretarios de Seguridad (Remotion)",
+  "private": true,
+  "scripts": {
+    "setup": "node scripts/generate-placeholders.mjs",
+    "dev": "remotion studio",
+    "render": "remotion render FinalVideo",
+    "render:secretario": "node scripts/render-one.mjs",
+    "render:all": "node scripts/render-all.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/google-fonts": "4.0.462",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.462"
+  },
+  "devDependencies": {
+    "@remotion/bundler": "4.0.462",
+    "@remotion/cli": "4.0.462",
+    "@remotion/renderer": "4.0.462",
+    "@remotion/tailwind": "4.0.462",
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "autoprefixer": "10.4.20",
+    "postcss": "8.4.49",
+    "tailwindcss": "3.4.17",
+    "typescript": "5.6.3"
+  }
+}
