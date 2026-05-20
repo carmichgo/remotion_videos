@@ -98,7 +98,7 @@ const FacialMock: React.FC = () => {
           textAlign: 'center',
         }}
       >
-        Coincidencia: Registro #4471 — Confianza 94%
+        Coincidencia — Cámara 23 — Zona Centro — Confianza 94%
       </div>
     </div>
   );
@@ -111,7 +111,7 @@ export const Beat4a_FacialRecognition: React.FC = () => {
       <CapabilityBlock
         icon={<FaceIcon />}
         title="Reconocimiento facial"
-        subtitle="Sobre toda su red de cámaras. Búsqueda contra sus propias listas."
+        subtitle="Sobre toda su red. Alerta inmediata a su C5 al detectar una coincidencia."
       >
         <SystemMedia
           slot="beat4a_facial"

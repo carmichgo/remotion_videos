@@ -86,13 +86,16 @@ npm run render -- out/ejemplo.mp4
 
 ## Audios personalizados (voiceover real)
 
-Los placeholders son `.wav` silenciosos. Para usar voiceover real:
+v4: solo el **intro** es variable por destinatario. El cierre ya no se
+personaliza, así que se necesita **1 audio variable por Secretario** (32 en
+total) en vez de 2. Los placeholders son `.wav` silenciosos.
 
-1. Genera los MP3 (p. ej. con ElevenLabs — ver más abajo) y colócalos en:
+Para usar voiceover real:
 
-   - `public/audio/master_body.mp3` — narración compartida (~48 s).
+1. Genera los MP3 (p. ej. con ElevenLabs) y colócalos en:
+
+   - `public/audio/master_body.mp3` — narración compartida (~52 s, cubre 0:05–0:59).
    - `public/audio/personalized/intro_{slug}.mp3` — intro por destinatario (~5 s).
-   - `public/audio/personalized/outro_{slug}.mp3` — cierre por destinatario (~7 s).
 
 2. Cambia la constante `AUDIO_EXT` en `src/types.ts` de `'wav'` a `'mp3'`
    (y el mismo valor en `scripts/render-lib.mjs`).
@@ -100,10 +103,9 @@ Los placeholders son `.wav` silenciosos. Para usar voiceover real:
 ### Guiones de voiceover
 
 - **Intro** (`intro_{slug}`): *"{Tratamiento} {Nombre}. Sesenta segundos."*
-- **Cierre** (`outro_{slug}`): *"Quince minutos. Le muestro cómo se vería
-  desplegado en {Estado}. {Fecha_1} o {Fecha_2}."*
-- **Master** (`master_body`): narración compartida de los Beats 2–5
-  (ver guion completo en el prompt del proyecto / comentarios de las escenas).
+- **Master** (`master_body`): narración compartida de los Beats 2–6
+  (dolor → promesa → 6 capacidades → neutralizador → cierre con piloto).
+  Ver el guion completo en los comentarios de las escenas o en el script v4.
 
 ### Conexión con ElevenLabs (pendiente)
 
@@ -129,20 +131,22 @@ scripts/                   # generación de placeholders y render batch
 out/                       # MP4 renderizados
 ```
 
-## Timeline (30 fps, 1800 frames)
+## Timeline (30 fps, 1800 frames) — v4
 
-| Beat | Frames    | Tiempo    | Contenido                              |
-|------|-----------|-----------|----------------------------------------|
-| 1    | 0–150     | 0:00–0:05 | Intro personalizada                    |
-| 2    | 150–360   | 0:05–0:12 | Pared de cámaras                       |
-| 3    | 360–600   | 0:12–0:20 | Búsqueda con resultados                |
-| 4a   | 600–750   | 0:20–0:25 | Reconocimiento facial                  |
-| 4b   | 750–930   | 0:25–0:31 | Lectura de placas + ruta               |
-| 4c   | 930–1080  | 0:31–0:36 | Detección de acciones                  |
-| 4d   | 1080–1260 | 0:36–0:42 | Reglas + búsquedas en lenguaje natural |
-| 5    | 1260–1590 | 0:42–0:53 | Neutralizador (infraestructura)        |
-| 6    | 1590–1770 | 0:53–0:59 | Cierre personalizado                   |
-| 7    | 1770–1800 | 0:59–1:00 | Logo Omnisight                         |
+| Beat | Frames     | Tiempo    | Contenido                              |
+|------|------------|-----------|----------------------------------------|
+| 1    | 0–150      | 0:00–0:05 | Intro personalizada (Axentra + nombre) |
+| 2    | 150–420    | 0:05–0:14 | El dolor — pared de cámaras            |
+| 3    | 420–600    | 0:14–0:20 | Promesa — búsqueda en lenguaje natural |
+| 4a   | 600–750    | 0:20–0:25 | Reconocimiento facial                  |
+| 4b   | 750–900    | 0:25–0:30 | Lectura de placas y rótulos            |
+| 4c   | 900–1080   | 0:30–0:36 | Nueve modelos de IA en paralelo        |
+| 4d   | 1080–1200  | 0:36–0:40 | Trazabilidad entre cámaras             |
+| 4e   | 1200–1350  | 0:40–0:45 | Instrucciones al operador IA           |
+| 4f   | 1350–1410  | 0:45–0:47 | Detección de obstrucciones             |
+| 5    | 1410–1620  | 0:47–0:54 | Neutralizador (infraestructura)        |
+| 6    | 1620–1770  | 0:54–0:59 | Cierre con piloto (no personalizado)   |
+| 7    | 1770–1800  | 0:59–1:00 | Logo (*"Ve todo. No pierde nada."*)    |
 
 ## Imagen real del sistema (drop-in)
 

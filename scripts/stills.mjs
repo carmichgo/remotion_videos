@@ -37,9 +37,24 @@ const composition = await selectComposition({
   chromiumOptions,
 });
 
-// Frames representativos (uno por beat) para verificación visual rápida.
+// Frames representativos para verificación visual de v4.
 const frames = [
-  30, 300, 520, 690, 870, 1000, 1045, 1160, 1245, 1540, 1680, 1790,
+  16,   // Beat 1 - "Axentra Solutions presenta" plate
+  310,  // Beat 2 - 3 líneas dolor
+  540,  // Beat 3 - resultados de búsqueda
+  690,  // Beat 4a - facial
+  800,  // Beat 4b - placa vehicular
+  850,  // Beat 4b - rótulo lateral
+  890,  // Beat 4b - letrero comercial
+  1000, // Beat 4c - 9 modelos con detecciones
+  1070, // Beat 4c - texto final "Nueve especialistas"
+  1150, // Beat 4d - trazabilidad (ruta dibujada)
+  1280, // Beat 4e - chat + confirmación
+  1340, // Beat 4e - notificación de detección
+  1390, // Beat 4f - obstrucciones
+  1530, // Beat 5 - infra + texto
+  1700, // Beat 6 - piloto sin costo
+  1790, // Beat 7 - logo "Ve todo. No pierde nada."
 ];
 const dir = path.join(root, 'out', 'stills');
 fs.mkdirSync(dir, { recursive: true });

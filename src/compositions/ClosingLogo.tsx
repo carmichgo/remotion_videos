@@ -19,7 +19,7 @@ export const ClosingLogo: React.FC = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 28,
+        gap: 22,
         opacity: fade,
       }}
     >
@@ -30,9 +30,29 @@ export const ClosingLogo: React.FC = () => {
           fontSize: 34,
           fontWeight: 400,
           color: colors.textMuted,
+          fontStyle: 'italic',
         }}
       >
-        Vigilancia inteligente para seguridad pública.
+        Ve todo. No pierde nada.
+      </div>
+      <div
+        style={{
+          marginTop: 14,
+          width: 220,
+          height: 1,
+          background: colors.border,
+        }}
+      />
+      <div
+        style={{
+          fontFamily: fonts.body,
+          fontSize: 22,
+          fontWeight: 500,
+          color: colors.textMuted,
+          letterSpacing: 1.5,
+        }}
+      >
+        by Axentra Solutions
       </div>
     </AbsoluteFill>
   );

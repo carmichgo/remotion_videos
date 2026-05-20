@@ -3,7 +3,7 @@ import './style.css';
 import { FinalVideo } from './compositions/FinalVideo';
 import { PersonalizedIntro } from './compositions/PersonalizedIntro';
 import { MasterBody } from './compositions/MasterBody';
-import { PersonalizedOutro } from './compositions/PersonalizedOutro';
+import { PilotOutro } from './compositions/PilotOutro';
 import { ClosingLogo } from './compositions/ClosingLogo';
 import { recordToProps, SecretarioRecord } from './types';
 import secretariosData from './data/secretarios.json';
@@ -44,19 +44,18 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="MasterBody"
         component={MasterBody}
-        durationInFrames={1440}
+        durationInFrames={1620}
         fps={FPS}
         width={WIDTH}
         height={HEIGHT}
       />
       <Composition
-        id="PersonalizedOutro"
-        component={PersonalizedOutro}
-        durationInFrames={180}
+        id="PilotOutro"
+        component={PilotOutro}
+        durationInFrames={150}
         fps={FPS}
         width={WIDTH}
         height={HEIGHT}
-        defaultProps={exampleProps}
       />
       <Composition
         id="ClosingLogo"

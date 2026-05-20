@@ -6,13 +6,12 @@ import { AnimatedText } from '../components/AnimatedText';
 import { SystemMedia } from '../components/SystemMedia';
 
 const LINES = [
-  'No reemplaza sus cámaras.',
-  'No sale su información.',
-  'Bitácora completa de cada búsqueda.',
+  'Funciona con sus cámaras IP actuales.',
+  'Análisis en tiempo real.',
+  'En la nube o en su propio C5.',
 ];
 
-// Beat 5 — Neutralizador (0:42–0:53, 330 frames).
-// Diagrama centrado arriba + 3 líneas debajo, sincronizadas con el audio.
+// Beat 5 — Neutralizador (0:47–0:54, 210 frames).
 export const Beat5_Neutralizer: React.FC = () => {
   return (
     <AbsoluteFill
@@ -40,14 +39,14 @@ export const Beat5_Neutralizer: React.FC = () => {
           alignItems: 'center',
           flexWrap: 'wrap',
           justifyContent: 'center',
-          maxWidth: 1500,
+          maxWidth: 1600,
         }}
       >
         {LINES.map((line, i) => (
           <AnimatedText
             key={i}
-            delay={150 + i * 55}
-            fontSize={44}
+            delay={70 + i * 36}
+            fontSize={40}
             fontWeight={700}
             color={i === 2 ? colors.accent : colors.text}
           >

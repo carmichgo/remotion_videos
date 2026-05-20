@@ -1,5 +1,11 @@
 import React from 'react';
-import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
+import {
+  AbsoluteFill,
+  Sequence,
+  spring,
+  useCurrentFrame,
+  useVideoConfig,
+} from 'remotion';
 import { colors } from '../theme/colors';
 import { fonts } from '../theme/fonts';
 import { CapabilityBlock } from '../components/CapabilityBlock';
@@ -25,175 +31,138 @@ const PlateIcon: React.FC = () => (
   </svg>
 );
 
-const PLATE = 'ABC-1234';
-const ROUTE = [
-  { x: 12, y: 78 },
-  { x: 34, y: 60 },
-  { x: 52, y: 70 },
-  { x: 70, y: 42 },
-  { x: 88, y: 30 },
-];
-
-const PlatesMock: React.FC = () => {
+// Marco común "leído por OCR" para los 3 micro-cuts.
+const OcrFrame: React.FC<{
+  caption: string;
+  text: string;
+  charsPerFrame?: number;
+  delay?: number;
+  // Forma del bloque (placa vehicular, rótulo lateral, letrero comercial)
+  variant: 'plate' | 'truck' | 'sign';
+}> = ({ caption, text, charsPerFrame = 4, delay = 6, variant }) => {
   const frame = useCurrentFrame();
-
-  const carX = interpolate(frame, [0, 80], [-25, 70], {
-    extrapolateRight: 'clamp',
-  });
-  const ocrChars = Math.max(
+  const { fps } = useVideoConfig();
+  const typed = Math.max(
     0,
-    Math.min(PLATE.length, Math.floor((frame - 40) / 4)),
+    Math.min(text.length, Math.floor((frame - delay) * charsPerFrame)),
   );
-
-  const phase2 = frame >= 88;
-  const routeProgress = interpolate(frame, [96, 168], [0, ROUTE.length], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
+  const visible = text.slice(0, typed);
+  const enter = spring({
+    frame,
+    fps,
+    config: { damping: 200 },
+    durationInFrames: 14,
   });
 
-  if (!phase2) {
-    return (
-      <div style={{ position: 'absolute', inset: 0 }}>
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 160,
-            left: 0,
-            right: 0,
-            height: 4,
-            background: colors.border,
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 164,
-            left: `${carX}%`,
-            width: 200,
-            height: 86,
-            borderRadius: 14,
-            background: '#d8e6ee',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            top: 90,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            textAlign: 'center',
-          }}
-        >
-          <div
-            style={{
-              fontFamily: fonts.mono,
-              fontSize: 22,
-              color: colors.textMuted,
-              marginBottom: 14,
-            }}
-          >
-            LECTURA OCR
-          </div>
-          <div
-            style={{
-              fontFamily: fonts.mono,
-              fontSize: 86,
-              fontWeight: 700,
-              letterSpacing: 8,
-              color: colors.accent,
-              border: `3px solid ${colors.accent}`,
-              borderRadius: 14,
-              padding: '18px 40px',
-              minWidth: 480,
-            }}
-          >
-            {PLATE.slice(0, ocrChars) || '—'}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const variantStyles: Record<typeof variant, React.CSSProperties> = {
+    plate: {
+      fontSize: 96,
+      letterSpacing: 10,
+      minWidth: 520,
+    },
+    truck: {
+      fontSize: 56,
+      letterSpacing: 1,
+      minWidth: 720,
+    },
+    sign: {
+      fontSize: 64,
+      letterSpacing: 2,
+      minWidth: 640,
+    },
+  };
 
   return (
-    <div style={{ position: 'absolute', inset: 0 }}>
-      <svg
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-      >
-        {Array.from({ length: 9 }).map((_, i) => (
-          <line
-            key={`v${i}`}
-            x1={(i + 1) * 10}
-            y1="0"
-            x2={(i + 1) * 10}
-            y2="100"
-            stroke={colors.border}
-            strokeWidth="0.3"
-          />
-        ))}
-        {Array.from({ length: 9 }).map((_, i) => (
-          <line
-            key={`h${i}`}
-            x1="0"
-            y1={(i + 1) * 10}
-            x2="100"
-            y2={(i + 1) * 10}
-            stroke={colors.border}
-            strokeWidth="0.3"
-          />
-        ))}
-        <polyline
-          points={ROUTE.slice(0, Math.ceil(routeProgress))
-            .map((p) => `${p.x},${p.y}`)
-            .join(' ')}
-          fill="none"
-          stroke={colors.accent}
-          strokeWidth="1.4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        {ROUTE.map((p, i) =>
-          i < routeProgress ? (
-            <circle
-              key={i}
-              cx={p.x}
-              cy={p.y}
-              r="1.8"
-              fill={i === 0 ? colors.accentSecondary : colors.accent}
-            />
-          ) : null,
-        )}
-      </svg>
+    <div
+      style={{
+        position: 'absolute',
+        inset: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 26,
+        padding: 40,
+        opacity: enter,
+        transform: `scale(${0.96 + enter * 0.04})`,
+      }}
+    >
       <div
         style={{
-          position: 'absolute',
-          top: 24,
-          left: 28,
           fontFamily: fonts.mono,
-          fontSize: 26,
-          color: colors.accent,
+          fontSize: 22,
+          color: colors.textMuted,
+          letterSpacing: 1.2,
         }}
       >
-        {PLATE} · ruta reconstruida
+        {caption}
+      </div>
+      <div
+        style={{
+          fontFamily: fonts.mono,
+          fontWeight: 700,
+          color: colors.accent,
+          border: `3px solid ${colors.accent}`,
+          borderRadius: 14,
+          padding: '20px 36px',
+          textAlign: 'center',
+          background: 'rgba(0,212,255,0.06)',
+          boxShadow: '0 0 24px rgba(0,212,255,0.15)',
+          ...variantStyles[variant],
+        }}
+      >
+        {visible || '—'}
       </div>
     </div>
   );
 };
 
-// Beat 4b — Placas y trazabilidad (0:25–0:31, 180 frames).
+const PlatesMock: React.FC = () => {
+  // 3 micro-cuts en 150 frames (5s): 50 frames cada uno.
+  return (
+    <>
+      <Sequence durationInFrames={50} name="Placa vehicular">
+        <OcrFrame
+          caption="LECTURA OCR · PLACA"
+          text="ABC-598"
+          variant="plate"
+        />
+      </Sequence>
+      <Sequence from={50} durationInFrames={50} name="Rótulo lateral">
+        <OcrFrame
+          caption="LECTURA OCR · RÓTULO"
+          text="Transportes del Norte — Unidad 47"
+          variant="truck"
+        />
+      </Sequence>
+      <Sequence from={100} durationInFrames={50} name="Letrero comercial">
+        <OcrFrame
+          caption="LECTURA OCR · LETRERO"
+          text="Farmacia Guadalajara"
+          variant="sign"
+        />
+      </Sequence>
+    </>
+  );
+};
+
+// Beat 4b — Lectura de placas y rótulos (0:25–0:30, 150 frames).
 export const Beat4b_LicensePlates: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: colors.bg }}>
       <CapabilityBlock
         icon={<PlateIcon />}
-        title="Lectura de placas y trazabilidad"
-        subtitle="Reconstrucción completa de la ruta de un vehículo a través de su ciudad."
+        title="Lectura de placas y rótulos"
+        subtitle="Placas, rótulos y cualquier texto que aparezca en cámara."
       >
         <SystemMedia
           slot="beat4b_placas"
           style={{ width: '100%', height: '100%' }}
-          fallback={<PlatesMock />}
+          fallback={
+            <div style={{ position: 'absolute', inset: 0 }}>
+              <PlatesMock />
+            </div>
+          }
         />
       </CapabilityBlock>
     </AbsoluteFill>

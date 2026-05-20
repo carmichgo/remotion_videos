@@ -25,10 +25,7 @@ function recordToProps(r) {
     tratamiento: r.tratamiento,
     nombre: r.nombre,
     estado: r.estado,
-    fecha_1: r.fecha_1,
-    fecha_2: r.fecha_2,
     audio_intro_url: `audio/personalized/intro_${r.slug}.${AUDIO_EXT}`,
-    audio_outro_url: `audio/personalized/outro_${r.slug}.${AUDIO_EXT}`,
     audio_master_url: `audio/master_body.${AUDIO_EXT}`,
   };
 }

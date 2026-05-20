@@ -11,9 +11,11 @@ import { fonts } from '../theme/fonts';
 type Props = {
   cols?: number;
   rows?: number;
-  // frame (local) en el que 15 cuadros bajan a 20% y uno queda al 100%
+  // frame (local) en el que los cuadros bajan a 20% y el focusIndex queda al 100%
   focusAtFrame?: number | null;
   focusIndex?: number;
+  // color del borde/glow del cuadro destacado (default cyan accent)
+  focusColor?: string;
 };
 
 // Mosaico de cámaras generado proceduralmente (sin video real).
@@ -22,7 +24,8 @@ const CameraTile: React.FC<{
   index: number;
   dim: number; // 0..1 -> opacidad de la imagen
   highlight: boolean;
-}> = ({ index, dim, highlight }) => {
+  highlightColor: string;
+}> = ({ index, dim, highlight, highlightColor }) => {
   const frame = useCurrentFrame();
   const seed = index + 1;
 
@@ -37,11 +40,11 @@ const CameraTile: React.FC<{
         position: 'relative',
         overflow: 'hidden',
         borderRadius: 10,
-        border: `2px solid ${highlight ? colors.accent : colors.border}`,
+        border: `2px solid ${highlight ? highlightColor : colors.border}`,
         background: colors.bgDark,
         opacity: dim,
         boxShadow: highlight
-          ? `0 0 32px ${colors.accent}66`
+          ? `0 0 32px ${highlightColor}66`
           : 'none',
       }}
     >
@@ -109,10 +112,11 @@ const CameraTile: React.FC<{
 };
 
 export const CameraGrid: React.FC<Props> = ({
-  cols = 6,
-  rows = 3,
+  cols = 4,
+  rows = 4,
   focusAtFrame = null,
-  focusIndex = 8,
+  focusIndex = 6,
+  focusColor = colors.accent,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -150,6 +154,7 @@ export const CameraGrid: React.FC<Props> = ({
             index={i}
             dim={dim}
             highlight={isFocus && focusProgress > 0.5}
+            highlightColor={focusColor}
           />
         );
       })}
