@@ -7,34 +7,46 @@ import {
   staticFile,
   useVideoConfig,
 } from 'remotion';
-import { MEDIA, MediaEntry, MediaSlot } from '../assets';
+import { MEDIA, MediaEntry, MediaSegment, MediaSlot } from '../assets';
 import { colors } from '../theme/colors';
 
 type Props = {
   slot: MediaSlot;
-  // Mockup procedural usado cuando el slot no tiene asset real.
   fallback: React.ReactNode;
-  // Marco visual común (borde/fondo) para que el mockup y el footage
-  // real se vean consistentes.
   framed?: boolean;
   style?: React.CSSProperties;
-  // Cuántas frames dura el slot que contiene este SystemMedia. Solo es
-  // necesario si la entry usa `holdLastMs` (para saber cuándo congelar).
+  // Frames totales del slot. Requerido si usas holdLastMs y segments
+  // sin durar exactamente lo que el slot.
   slotFrames?: number;
 };
 
 const isVideo = (src: string) => /\.(mp4|webm|mov|m4v)$/i.test(src);
 
-const resolveEntry = (entry: MediaEntry) => {
+type Resolved = {
+  src: string;
+  startFrom: number;
+  playbackRate: number;
+  holdLastMs: number;
+  segments: MediaSegment[] | null;
+};
+
+const resolveEntry = (entry: MediaEntry): Resolved | null => {
   if (entry == null) return null;
   if (typeof entry === 'string') {
-    return { src: entry, startFrom: 0, playbackRate: 1, holdLastMs: 0 };
+    return {
+      src: entry,
+      startFrom: 0,
+      playbackRate: 1,
+      holdLastMs: 0,
+      segments: null,
+    };
   }
   return {
     src: entry.src,
     startFrom: entry.startFrom ?? 0,
     playbackRate: entry.playbackRate ?? 1,
     holdLastMs: entry.holdLastMs ?? 0,
+    segments: entry.segments && entry.segments.length > 0 ? entry.segments : null,
   };
 };
 
@@ -68,7 +80,6 @@ export const SystemMedia: React.FC<Props> = ({
     display: 'block',
   };
 
-  // Imagen estática: sin freeze ni rate.
   if (!isVideo(entry.src)) {
     return (
       <div style={{ ...frameStyle, ...style }}>
@@ -77,12 +88,73 @@ export const SystemMedia: React.FC<Props> = ({
     );
   }
 
-  const startFromFrames = Math.round(entry.startFrom * fps);
   const holdFrames = Math.round((entry.holdLastMs * fps) / 1000);
+
+  // Caso multi-segmento: cada segmento es una sub-sequence; freeze opcional.
+  if (entry.segments) {
+    let cum = 0;
+    const segs = entry.segments.map((s) => {
+      const sourceSeconds = s.to - s.from;
+      const segFrames = Math.max(
+        1,
+        Math.round((sourceSeconds * fps) / entry.playbackRate),
+      );
+      const from = cum;
+      cum += segFrames;
+      return {
+        from,
+        durationInFrames: segFrames,
+        sourceStartFrame: Math.round(s.from * fps),
+      };
+    });
+    const totalPlayFrames = cum;
+    const lastSeg = entry.segments[entry.segments.length - 1];
+    const freezeSourceFrame = Math.round(lastSeg.to * fps) - 1;
+
+    return (
+      <div style={{ ...frameStyle, ...style }}>
+        {segs.map((s, i) => (
+          <Sequence
+            key={i}
+            from={s.from}
+            durationInFrames={s.durationInFrames}
+            layout="none"
+          >
+            <OffthreadVideo
+              src={staticFile(entry.src)}
+              style={full}
+              muted
+              startFrom={s.sourceStartFrame}
+              playbackRate={entry.playbackRate}
+            />
+          </Sequence>
+        ))}
+        {holdFrames > 0 ? (
+          <Sequence
+            from={totalPlayFrames}
+            durationInFrames={holdFrames}
+            layout="none"
+          >
+            <Freeze frame={totalPlayFrames}>
+              <OffthreadVideo
+                src={staticFile(entry.src)}
+                style={full}
+                muted
+                startFrom={freezeSourceFrame}
+                playbackRate={entry.playbackRate}
+              />
+            </Freeze>
+          </Sequence>
+        ) : null}
+      </div>
+    );
+  }
+
+  // Caso simple (un solo segmento por startFrom).
+  const startFromFrames = Math.round(entry.startFrom * fps);
   const hasHold = holdFrames > 0 && slotFrames && slotFrames > holdFrames;
   const playFrames = hasHold ? slotFrames - holdFrames : 0;
 
-  // Sin freeze: reproducción normal.
   if (!hasHold) {
     return (
       <div style={{ ...frameStyle, ...style }}>
@@ -97,8 +169,6 @@ export const SystemMedia: React.FC<Props> = ({
     );
   }
 
-  // Con freeze: dos sub-sequences. La segunda usa <Freeze> + un OffthreadVideo
-  // cuyo startFrom apunta a la frame donde terminó la reproducción.
   const freezeSourceFrame =
     startFromFrames + Math.round(playFrames * entry.playbackRate);
 

@@ -67,6 +67,7 @@ export const Beat3_Promise: React.FC = () => {
         slot="beat3_busqueda"
         framed={false}
         style={{ width: '100%', height: '100%' }}
+        slotFrames={180}
         fallback={<PromiseMock />}
       />
     </AbsoluteFill>

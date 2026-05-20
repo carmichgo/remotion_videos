@@ -4,26 +4,38 @@
 // son `null` y se muestra el mockup procedural (React/SVG) como fallback.
 //
 // CUANDO TENGAS EL FOOTAGE/CAPTURA REAL:
-//   1. Suelta el archivo en `public/` (ej. public/video/beat3_busqueda.mp4
-//      o public/screens/beat4d_trazabilidad.png).
+//   1. Suelta el archivo en `public/`.
 //   2. Pon su ruta relativa a `public/` en el slot correspondiente abajo.
-//      Forma corta: `'video/beat3_busqueda.mp4'`
-//      Forma extendida (recortar / acelerar / congelar última frame):
-//        { src: 'video/x.mp4', startFrom: 4, playbackRate: 7, holdLastMs: 500 }
-//        - startFrom:   segundo en el clip fuente donde empezar a reproducir
-//        - playbackRate: 1 = velocidad normal, 2 = 2x, 7 = 7x (timelapse)
-//        - holdLastMs:  ms al final del slot mostrando la última frame
-//                       congelada (para que se vea bien antes del corte)
+//      Forma corta: `'video/x.mp4'`
+//      Forma extendida (recortar / acelerar / saltar / congelar):
+//        {
+//          src: 'video/x.mp4',
+//          startFrom: 4,                   // segundo donde empezar
+//          playbackRate: 7,                // 1 = normal, >1 = más rápido
+//          holdLastMs: 500,                // freeze de última frame al final
+//          segments: [                     // saltar partes del clip
+//            { from: 0,  to: 18 },         //   ej. cortar el loading 18–41
+//            { from: 41, to: 83.6 },
+//          ],
+//        }
+//      Si usas `segments`, ignora `startFrom`. Cada segmento corre al
+//      mismo `playbackRate`.
 //   3. Vuelve a renderizar. El componente detecta video vs imagen por la
 //      extensión (.mp4/.webm/.mov = video; resto = imagen).
+
+export type MediaSegment = {
+  from: number; // segundo donde empieza este segmento en el clip fuente
+  to: number; // segundo donde termina este segmento en el clip fuente
+};
 
 export type MediaEntry =
   | string
   | {
       src: string;
-      startFrom?: number; // segundos desde el inicio del clip fuente
-      playbackRate?: number; // 1 = normal, >1 = más rápido
-      holdLastMs?: number; // freeze de la última frame al final del slot
+      startFrom?: number;
+      playbackRate?: number;
+      holdLastMs?: number;
+      segments?: MediaSegment[];
     }
   | null;
 
@@ -40,12 +52,21 @@ export type MediaSlot =
 
 export const MEDIA: Record<MediaSlot, MediaEntry> = {
   beat2_camaras: null,
-  beat3_busqueda: null,
+  beat3_busqueda: {
+    src: 'video/beat3_busqueda.mp4',
+    // Saltar el loading muerto entre 18–41s del clip fuente (83.6s total).
+    segments: [
+      { from: 0, to: 18 },
+      { from: 41, to: 83.6 },
+    ],
+    playbackRate: 11, // 60.6s útiles ÷ 11 ≈ 5.5s de slot
+    holdLastMs: 500, // freeze de la última frame antes del corte
+  },
   beat4a_facial: {
     src: 'video/beat4a_facial.mp4',
-    startFrom: 4, // arranca en el segundo 4 del clip fuente
-    playbackRate: 7.1, // 5s de playback × 7.1 = 35.5s; cubre 4–39.5s del clip
-    holdLastMs: 500, // congela la última frame 500ms antes del corte
+    startFrom: 4,
+    playbackRate: 7.1,
+    holdLastMs: 500,
   },
   beat4b_placas: null,
   beat4c_nueve: null,
