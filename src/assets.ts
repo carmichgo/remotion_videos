@@ -24,7 +24,7 @@ export type MediaSlot =
 export const MEDIA: Record<MediaSlot, string | null> = {
   beat2_camaras: null, // ej. 'video/beat2_camaras.mp4'
   beat3_busqueda: null, // ej. 'video/beat3_busqueda.mp4'
-  beat4a_facial: null, // ej. 'video/beat4a_facial.mp4'
+  beat4a_facial: 'video/beat4a_facial.mp4',
   beat4b_placas: null, // ej. 'video/beat4b_placas.mp4'
   beat4c_nueve: null, // ej. 'video/beat4c_nueve_modelos.mp4'
   beat4d_trazabilidad: null, // ej. 'video/beat4d_trazabilidad.mp4'
