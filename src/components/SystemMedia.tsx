@@ -1,7 +1,9 @@
 import React from 'react';
 import {
+  Freeze,
   Img,
   OffthreadVideo,
+  Sequence,
   staticFile,
   useVideoConfig,
 } from 'remotion';
@@ -16,28 +18,32 @@ type Props = {
   // real se vean consistentes.
   framed?: boolean;
   style?: React.CSSProperties;
+  // Cuántas frames dura el slot que contiene este SystemMedia. Solo es
+  // necesario si la entry usa `holdLastMs` (para saber cuándo congelar).
+  slotFrames?: number;
 };
 
 const isVideo = (src: string) => /\.(mp4|webm|mov|m4v)$/i.test(src);
 
-// Normaliza MediaEntry (string | objeto | null) a una forma uniforme.
 const resolveEntry = (entry: MediaEntry) => {
   if (entry == null) return null;
-  if (typeof entry === 'string') return { src: entry, startFrom: 0, playbackRate: 1 };
+  if (typeof entry === 'string') {
+    return { src: entry, startFrom: 0, playbackRate: 1, holdLastMs: 0 };
+  }
   return {
     src: entry.src,
     startFrom: entry.startFrom ?? 0,
     playbackRate: entry.playbackRate ?? 1,
+    holdLastMs: entry.holdLastMs ?? 0,
   };
 };
 
-// Renderiza el asset real del sistema si está definido en src/assets.ts;
-// si no, muestra el mockup procedural.
 export const SystemMedia: React.FC<Props> = ({
   slot,
   fallback,
   framed = true,
   style,
+  slotFrames,
 }) => {
   const { fps } = useVideoConfig();
   const entry = resolveEntry(MEDIA[slot]);
@@ -62,19 +68,62 @@ export const SystemMedia: React.FC<Props> = ({
     display: 'block',
   };
 
-  return (
-    <div style={{ ...frameStyle, ...style }}>
-      {isVideo(entry.src) ? (
+  // Imagen estática: sin freeze ni rate.
+  if (!isVideo(entry.src)) {
+    return (
+      <div style={{ ...frameStyle, ...style }}>
+        <Img src={staticFile(entry.src)} style={full} />
+      </div>
+    );
+  }
+
+  const startFromFrames = Math.round(entry.startFrom * fps);
+  const holdFrames = Math.round((entry.holdLastMs * fps) / 1000);
+  const hasHold = holdFrames > 0 && slotFrames && slotFrames > holdFrames;
+  const playFrames = hasHold ? slotFrames - holdFrames : 0;
+
+  // Sin freeze: reproducción normal.
+  if (!hasHold) {
+    return (
+      <div style={{ ...frameStyle, ...style }}>
         <OffthreadVideo
           src={staticFile(entry.src)}
           style={full}
           muted
-          startFrom={Math.round(entry.startFrom * fps)}
+          startFrom={startFromFrames}
           playbackRate={entry.playbackRate}
         />
-      ) : (
-        <Img src={staticFile(entry.src)} style={full} />
-      )}
+      </div>
+    );
+  }
+
+  // Con freeze: dos sub-sequences. La segunda usa <Freeze> + un OffthreadVideo
+  // cuyo startFrom apunta a la frame donde terminó la reproducción.
+  const freezeSourceFrame =
+    startFromFrames + Math.round(playFrames * entry.playbackRate);
+
+  return (
+    <div style={{ ...frameStyle, ...style }}>
+      <Sequence durationInFrames={playFrames} layout="none">
+        <OffthreadVideo
+          src={staticFile(entry.src)}
+          style={full}
+          muted
+          startFrom={startFromFrames}
+          playbackRate={entry.playbackRate}
+        />
+      </Sequence>
+      <Sequence from={playFrames} durationInFrames={holdFrames} layout="none">
+        <Freeze frame={playFrames}>
+          <OffthreadVideo
+            src={staticFile(entry.src)}
+            style={full}
+            muted
+            startFrom={freezeSourceFrame}
+            playbackRate={entry.playbackRate}
+          />
+        </Freeze>
+      </Sequence>
     </div>
   );
 };

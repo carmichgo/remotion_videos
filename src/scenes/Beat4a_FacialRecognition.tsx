@@ -116,6 +116,7 @@ export const Beat4a_FacialRecognition: React.FC = () => {
         <SystemMedia
           slot="beat4a_facial"
           style={{ width: '100%', height: '100%' }}
+          slotFrames={165}
           fallback={<FacialMock />}
         />
       </CapabilityBlock>
