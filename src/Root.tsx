@@ -13,7 +13,7 @@ const secretarios = secretariosData as SecretarioRecord[];
 const FPS = 30;
 const WIDTH = 1920;
 const HEIGHT = 1080;
-const TOTAL_FRAMES = 1800; // 60s @ 30fps
+const TOTAL_FRAMES = 1815; // 60.5s @ 30fps (v4.1: +0.5s en Beat 4a)
 
 // Destinatario de ejemplo para Remotion Studio (Tamaulipas).
 const exampleProps = recordToProps(secretarios[0]);
@@ -44,7 +44,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="MasterBody"
         component={MasterBody}
-        durationInFrames={1620}
+        durationInFrames={1635}
         fps={FPS}
         width={WIDTH}
         height={HEIGHT}

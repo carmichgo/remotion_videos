@@ -41,7 +41,7 @@ export const MEDIA: Record<MediaSlot, MediaEntry> = {
   beat4a_facial: {
     src: 'video/beat4a_facial.mp4',
     startFrom: 4, // arranca en el segundo 4 del clip fuente
-    playbackRate: 7, // 7x para encajar 4s–39.6s del clip en el slot de 5s
+    playbackRate: 6.4, // 5.5s × 6.4 = 35.2s de fuente; fin más relajado
   },
   beat4b_placas: null,
   beat4c_nueve: null,

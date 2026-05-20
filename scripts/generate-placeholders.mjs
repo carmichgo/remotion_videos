@@ -56,8 +56,8 @@ const secretarios = JSON.parse(
 
 console.log('Generando placeholders de audio (silenciosos)…');
 
-// Master compartido: 54 s (0:05–0:59, Beats 2–6).
-writeSilentWav(path.join(audioDir, 'master_body.wav'), 54);
+// Master compartido: 54.5 s (0:05–0:59.5, Beats 2–6). v4.1: +0.5s en Beat 4a.
+writeSilentWav(path.join(audioDir, 'master_body.wav'), 54.5);
 
 // Personalizado por destinatario: solo intro (5 s). El cierre ya no se personaliza.
 for (const s of secretarios) {
