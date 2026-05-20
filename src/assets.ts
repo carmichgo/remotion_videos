@@ -7,8 +7,22 @@
 //   1. Suelta el archivo en `public/` (ej. public/video/beat3_busqueda.mp4
 //      o public/screens/beat4d_trazabilidad.png).
 //   2. Pon su ruta relativa a `public/` en el slot correspondiente abajo.
+//      Forma corta: `'video/beat3_busqueda.mp4'`
+//      Forma extendida (recortar / acelerar):
+//        { src: 'video/beat3_busqueda.mp4', startFrom: 4, playbackRate: 7 }
+//        - startFrom:   segundo en el clip fuente donde empezar a reproducir
+//        - playbackRate: 1 = velocidad normal, 2 = 2x, 7 = 7x (timelapse)
 //   3. Vuelve a renderizar. El componente detecta video vs imagen por la
 //      extensión (.mp4/.webm/.mov = video; resto = imagen).
+
+export type MediaEntry =
+  | string
+  | {
+      src: string;
+      startFrom?: number; // segundos desde el inicio del clip fuente
+      playbackRate?: number; // 1 = normal, >1 = más rápido
+    }
+  | null;
 
 export type MediaSlot =
   | 'beat2_camaras'
@@ -21,14 +35,18 @@ export type MediaSlot =
   | 'beat4f_obstrucciones'
   | 'beat5_infra';
 
-export const MEDIA: Record<MediaSlot, string | null> = {
+export const MEDIA: Record<MediaSlot, MediaEntry> = {
   beat2_camaras: null, // ej. 'video/beat2_camaras.mp4'
   beat3_busqueda: null, // ej. 'video/beat3_busqueda.mp4'
-  beat4a_facial: 'video/beat4a_facial.mp4',
-  beat4b_placas: null, // ej. 'video/beat4b_placas.mp4'
-  beat4c_nueve: null, // ej. 'video/beat4c_nueve_modelos.mp4'
-  beat4d_trazabilidad: null, // ej. 'video/beat4d_trazabilidad.mp4'
-  beat4e_instrucciones: null, // ej. 'screens/beat4e_instrucciones.png'
-  beat4f_obstrucciones: null, // ej. 'video/beat4f_obstrucciones.mp4'
-  beat5_infra: null, // normalmente se deja el diagrama animado
+  beat4a_facial: {
+    src: 'video/beat4a_facial.mp4',
+    startFrom: 4, // arranca en el segundo 4 del clip fuente
+    playbackRate: 7, // 7x para encajar 4s–39.6s del clip en el slot de 5s
+  },
+  beat4b_placas: null,
+  beat4c_nueve: null,
+  beat4d_trazabilidad: null,
+  beat4e_instrucciones: null,
+  beat4f_obstrucciones: null,
+  beat5_infra: null,
 };
